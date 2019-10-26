@@ -1,7 +1,7 @@
 module SimpleSolver
 using JuMP, CPLEX, Calculus, LinearAlgebra
 export solve_1, s2, s3, fundif, invmat, q6, q2
-
+include("dual.jl")
 
 function q2() 
     model = Model(with_optimizer(CPLEX.Optimizer)) 
