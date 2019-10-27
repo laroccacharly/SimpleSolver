@@ -25,25 +25,56 @@ function a1()
     lp = pivot(lp, 1, 2) |> print_lp
     lp = pivot(lp, 3, 3) |> print_lp
 
-    return model
+    return nothing
 end 
 
 export a6 
 function a6() 
-    model = new_model() 
-    @variable(model, x1 >= 0, Int)
-    @variable(model, x2 >= 0, Int)
+    function base_model(;relaxed=true ) 
+        model = new_model() 
+        if relaxed 
+            @variable(model, x1 >= 0)
+            @variable(model, x2 >= 0)
+        else 
+            @variable(model, x1 >= 0, Int)
+            @variable(model, x2 >= 0, Int)
+        end 
 
-    @objective(model, Min,  -x1 -2x2)
-    @constraint(model, 2x1 + x2 <= 5.5)
-    @constraint(model, x2 <= 2)
+        @objective(model, Min,  -x1 -2x2)
+        @constraint(model, 2x1 + x2 <= 5.5)
+        @constraint(model, x2 <= 2)
+        return model 
+    end 
 
-    optimize!(model)
-    print(model)
-    @show objective_value(model)
-    @show value.(model[:x1])
-    @show value.(model[:x2])
-    return model
+    function opt_and_print(model)
+        optimize!(model)
+        print(model)
+        @show objective_value(model)
+        @show termination_status(model)
+        @show value.(model[:x1])
+        @show value.(model[:x2])
+    end 
+    #model_int = base_model(relaxed=false)
+    #opt_and_print(model_int)
+    
+    model = base_model() 
+    opt_and_print(model)
+    
+    #= 
+    @constraint(model, model[:x1] >= 2)
+    opt_and_print(model)
+    # @constraint(model, model[:x2] >= 2) # Inf 
+    @constraint(model, model[:x2] <= 1)
+    opt_and_print(model)
+    # @constraint(model, model[:x1] >= 3) # Inf 
+    @constraint(model, model[:x1] <= 2)
+    opt_and_print(model)
+    =# 
+
+    @constraint(model, model[:x1] <= 1)
+    opt_and_print(model)
+
+    return nothing 
 end 
 
 struct LinearProgram
