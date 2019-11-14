@@ -33,6 +33,7 @@ function mcf()
 
 
     ### Finding entry and exit variables for given base and hb 
+    #= 
     base = [
         (1,2),
         (2,4),
@@ -48,7 +49,7 @@ function mcf()
         (4,6),
         (5,4)
     ]
-    #=
+    =#
     base = [
         (1,2),
         (2,4),
@@ -64,7 +65,7 @@ function mcf()
         (4,6),
         (5,4)
     ]
-    =# 
+
     m = Model(with_optimizer(CPLEX.Optimizer))
     
     @variable(m, x[1:6])

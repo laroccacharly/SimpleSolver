@@ -1,5 +1,3 @@
-using JuMP, Dualization
-import Dualization: DualNames 
 export dual_test
 
 function dual_test() 

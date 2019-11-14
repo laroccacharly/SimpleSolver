@@ -1,5 +1,5 @@
 module SimpleSolver
-using JuMP, CPLEX, Calculus, LinearAlgebra
+using JuMP, CPLEX, Calculus, LinearAlgebra, Dualization
 include("d1.jl")
 include("d2.jl")
 

@@ -118,3 +118,97 @@ function pivot(LP::LinearProgram, entry::Int, exit::Int)::LinearProgram
     z = z - b[exit] * n 
     return LinearProgram(A, b, c, z)
 end 
+
+function build_model(LP::LinearProgram)
+    A, b, c, z = LP.A, LP.b, LP.c, LP.z 
+    model = new_model() 
+
+    @variable(model, x[1:length(c)] >= 0)
+
+    @objective(model, Min,  c' * x)
+    for (index, row) in enumerate(eachrow(A))
+        con = @constraint(model, row' * x >= b[index])
+        set_name(con, "c$index")
+    end
+    return model 
+end 
+
+export intra1
+function intra1() 
+
+    A = [8 2 1 0; 5 2 0 1]
+    b = [16 12] |> vec 
+    c = [-4 -1 0 0] |> vec 
+    z = 0 
+    lp = LinearProgram(A, b, c, z)
+    lp = pivot(lp, 1,1) |> print_lp
+    B = [1 4 6; 0 1 1; 0 2 3] 
+    @show inv(B)
+    A = [4 6 1 0 0; 1 1 0 1 0;2 3 0 0 1]
+    @show inv(B) * A
+    return nothing 
+end 
+
+export intra2 
+function intra2() 
+    model = new_model() 
+    
+    @variable(model, x1 >= 0)
+    @variable(model, x2 >= 0)
+    @variable(model, x3 >= 0)
+    @variable(model, x4 >= 0)
+    @variable(model, x5 >= 0)
+
+    @objective(model, Min,  -35x1 -50x2)
+
+    @constraint(model, 4x1 + 6x2 + x3 == 75)
+    @constraint(model, x1 + x2 +x4== 15)
+    @constraint(model, 2x1 + 3x2 +x5 == 50)
+    print(model)
+    optimize!(model)
+    @show objective_value(model)
+    @show value.(model[:x1])
+    @show value.(model[:x2])
+
+    A = [4 6 1 0 0;  1 1 0 1 0; 2 3 0 0 1]
+    b = [120 20 40] |> vec 
+    c = [-35-16 -50 0 0 0] |> vec 
+    z = 0 
+    lp = LinearProgram(A, b, c, z)
+    lp = pivot(lp, 2, 3) |> print_lp
+    lp = pivot(lp, 1, 2) |> print_lp
+    lp = pivot(lp, 5, 3) |> print_lp
+
+    #pivot(lp, 2, 3) |> print_lp
+
+    return nothing 
+    #=
+    A = [0 0 1  0 -2; 1 0 0 3 -1; 0 1 0 -2 1]
+    b = [-25 -5 20] |> vec 
+    c = [0 0 0 5 15] |> vec 
+    z = 825
+    lp = LinearProgram(A, b, c, z)
+    lp = pivot(lp, 5,1) |> print_lp
+
+    ib = [1 0 -2; 0 3 -1; 0 -2 1]
+    @show ib * [75;15;50]
+    =#  
+
+end 
+
+export intra3 
+
+function intra3() 
+    A = [8 4 2; 6 2 1.5; 1 1.5 0.5]
+    b = [60 30 20] |> vec 
+    c = [48 20 8] |> vec 
+    z = 0
+    lp = LinearProgram(A, b, c, z)
+    model = build_model(lp)
+    print(model)
+    
+    dual = dualize(model, with_optimizer(CPLEX.Optimizer))
+    optimize!(dual)
+    print(dual)
+    return value.(all_variables(dual)) 
+end 
