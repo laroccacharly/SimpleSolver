@@ -112,9 +112,17 @@ end
 
 export d4_q6 
 function d4_q6()
-    l = 20/8 # u/h 
-    u = 1 / 36 * 60/1 # u/h 
+    
+    @show l = 20/8 # u/h 
+    @show u = 1 / 36 * 60/1 # u/h 
     s = 3 
-    p0 = 1/() # Summation 
-    lq = p0 * (l/u)^s * (1/factorial(s)) * r/((1-r)^2) 
+    
+    
+    @show r = l/(s*u)
+    q(n) = ((l/u)^n) * (1/factorial(n))
+    # sq = sum
+    @show p0 = 1/((sum(q(n) for n in 0:s-1)) + (q(s) * 1/(1-r))) # Summation 
+    
+    @show Lq = p0 * q(s) * r/((1-r)^2) 
+    @show Wq = Lq/l 
 end 
