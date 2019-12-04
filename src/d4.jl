@@ -125,4 +125,9 @@ function d4_q6()
     
     @show Lq = p0 * q(s) * r/((1-r)^2) 
     @show Wq = Lq/l 
+    @show p1 = q(1) * p0 
+    @show p2 = q(2) * p0 
+    @show p3 = q(3) * p0 
+    @show 1 - (p0 + p1 + p2 + p3)
+    @show log(2)/u
 end 
